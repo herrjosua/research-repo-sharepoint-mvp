@@ -1,3 +1,7 @@
 .idea/
 .gemini/
 .agents/
+.DS_Store
+build/
+~$*
+__pycache__/
