@@ -4,8 +4,9 @@ Pass/fail check for whether Microsoft 365 Copilot can answer questions from the 
 SharePoint library. Fictional data (study S-01, Meeting Room Booking Study).
 
 ## How to run
-1. Convert `content/` to Office files and upload them to a test library with the metadata columns
-   (see `sharepoint-profile.md`).
+1. Upload the files in `library/` to a test library, and only those: not `docs/` (this file holds
+   the answers) or `source/`. Add the metadata columns (see `sharepoint-profile.md`);
+   `library-metadata.csv` has the values for each file.
 2. Wait for indexing; run the questions again the next day, because indexing can lag.
 3. Ask each question in Copilot Chat, in a new chat each time.
 4. Record the result in the table at the bottom.
@@ -35,7 +36,7 @@ For each question record:
 - **Invented content** (yes / no); any invented fact is a fail
 - **File format of the source** (Word, Excel, PowerPoint, PDF)
 
-Also note: whether Copilot used the metadata columns, and whether the index (`_index`) helped.
+Also note: whether Copilot used the metadata columns, and whether the index workbook helped.
 
 ## Results
 | # | Correct | Right source | Invented | Source format | Notes |

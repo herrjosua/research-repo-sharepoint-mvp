@@ -1,18 +1,18 @@
 # SharePoint profile
 
-How the Markdown in `content/` is written so it still works after conversion to Word, Excel,
-PowerPoint and PDF files in a SharePoint library that Microsoft 365 Copilot searches. This profile
-exists because Copilot sees SharePoint files as documents, not as a repository: it does not follow
-relative links or folder paths, and it may not treat YAML frontmatter as structured fields.
+How the records in `library/` are written so Microsoft 365 Copilot can use them from a SharePoint
+library. The records are Word, Excel, PowerPoint and PDF files, edited directly. This profile exists
+because Copilot sees SharePoint files as documents, not as a repository: it does not follow links or
+folder paths, and it may not index metadata columns as searchable fields.
 
 ## Rules
 
 | Rule | Why |
 |---|---|
 | Every file has an ID prefix and a descriptive name: `F-01_booked-rooms-sit-empty_2026-09` | The name is the one piece of context that always travels with the file |
-| Every file opens with a header table (ID, type, study, valence, prevalence, status, author, dates, related) | Frontmatter may not be indexed as fields; the table is body text, so it is |
-| Frontmatter is kept alongside the table | It is the source for the SharePoint metadata columns below |
-| Cross-references use ID and title ("F-04 Recurring bookings..."), never relative paths or `[[wiki]]` links | Copilot cannot follow links between files |
+| Every file opens with a header table (ID, type, study, valence, prevalence, status, author, dates, related) | Metadata columns may not be indexed as fields; the table is body text, so it is |
+| The same values go in the SharePoint metadata columns below | Columns make the library filterable; `docs/library-metadata.csv` has the values for each file |
+| Cross-references use ID and title ("F-04 Recurring bookings..."), never file paths or links | Copilot cannot follow links between files |
 | Each record restates its own context (study, dates, method, participant count) | Copilot retrieves pieces of files, not whole folders |
 | Prevalence is written as text ("5 of 6 participants (83%)") | Charts and images are not read reliably |
 | Quotes are inline, with participant ID | Evidence has to be in the file to be cited |
@@ -23,19 +23,19 @@ relative links or folder paths, and it may not treat YAML frontmatter as structu
 
 These become SharePoint site columns, attached through one content type for all records.
 
-| Column | Type | Source field | Values |
+| Column | Type | Header table row | Values |
 |---|---|---|---|
-| ID | Single line of text | `id` | `F-01`, `A-01`, ... |
-| Title | Single line of text | `title` | |
-| Record type | Choice | `type` | plan, notes, finding, analytics, readout, index |
-| Study | Single line of text | `study_id` | `S-01` |
-| Status | Choice | `status` | draft, final |
-| Valence | Choice | `valence` | pain-point, insight, n/a |
-| Prevalence | Single line of text | `prevalence` | "5 of 6 participants" |
-| Author | Single line of text | `author` | |
-| Date | Date | `date` | |
-| Last reviewed | Date | `last_reviewed` | |
-| Related | Single line of text | `related` | `F-04, F-05, A-01` |
+| ID | Single line of text | ID | `F-01`, `A-01`, ... |
+| Title | Single line of text | (document title) | |
+| Record type | Choice | Type | plan, notes, finding, analytics, readout, index |
+| Study | Single line of text | Study | `S-01` |
+| Status | Choice | Status | draft, final |
+| Valence | Choice | Valence | pain-point, insight, n/a |
+| Prevalence | Single line of text | Prevalence | "5 of 6 participants" |
+| Author | Single line of text | Author | |
+| Date | Date | Date | |
+| Last reviewed | Date | Last reviewed | |
+| Related | Single line of text | Related | `F-04, F-05, A-01` |
 
 ## ID prefixes
 
@@ -55,10 +55,23 @@ These become SharePoint site columns, attached through one content type for all 
   columns.
 - **PowerPoint:** a descriptive sentence as each slide title; the full wording in the speaker notes;
   alt text on any chart.
-- **PDF:** needs a real text layer. Treat it as a distribution copy of a Word file.
+- **PDF:** needs a real text layer. Treat it as a distribution copy of a Word file; the Word original
+  is in `source/`.
+
+## Keeping the files consistent
+
+There is no build step, so the same fact is typed in several files. After changing one, update the
+others.
+
+| Fact | Lives in |
+|---|---|
+| Who raised what (counts out of 6) | N-01 matrix, the findings F-01 to F-05, R-01 slide 4, the index workbook |
+| Booked, used and unused hours; no-show rates | A-01 workbook, F-01, F-05, R-01 slides 3 and 7 |
+| Quotes | N-01 and the finding that uses them |
+| Titles, dates, status | Each file's header table, the index workbook, `docs/library-metadata.csv` |
 
 ## How this differs from the full research repo
 
 The full repo (`agentic-repo`) relies on git, relative links, per-folder indexes and frontmatter
 queried by tooling. This profile is the same content with the structure moved into file names, body
-text and SharePoint columns. It assumes no git and no scripts on the client side.
+text and SharePoint columns. It assumes no git, no scripts and no Python on the client side.

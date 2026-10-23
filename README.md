@@ -6,8 +6,9 @@ the client side?
 
 It is the low-tech counterpart to [`agentic-repo`](https://github.com/herrjosua/agentic-repo), a
 git and Markdown research knowledge base queried by an AI agent. This repo keeps a deliberately
-small subset of that idea (one study, nine records) and rewrites it so it survives as plain
-SharePoint documents.
+small subset of that idea (one study, nine records) as plain SharePoint documents. The Office and
+PDF files are the source of truth and are edited directly. There is no build step, and nothing here
+needs Python or any other tooling.
 
 All data in this repository is **fictional**. The company (Harborview Group), the internal app
 (RoomBook), the researcher and all participants are invented.
@@ -16,10 +17,9 @@ All data in this repository is **fictional**. The company (Harborview Group), th
 
 | Part | State |
 |---|---|
-| Study content (Markdown source) | Drafted |
+| Study files (Word, Excel, PowerPoint, PDF) | Done |
 | SharePoint conventions | Documented in [`docs/sharepoint-profile.md`](docs/sharepoint-profile.md) |
 | Copilot test questions | Drafted in [`docs/copilot-test-plan.md`](docs/copilot-test-plan.md) |
-| Conversion to Office files and PDF | Working: `python3 scripts/build.py` |
 | Test in a SharePoint library with Copilot | Not started |
 
 ## The study
@@ -33,85 +33,59 @@ data cannot answer.
 ## Layout
 
 ```
-content/    One Markdown file per record, flat. Source for the Office files.
-  _index.md   Master index (becomes an Excel workbook)
-  PL-01_...   Research plan
-  N-01_...    Interview notes (6 sessions)
-  F-01_...    Findings F-01 to F-05
-  A-01_...    Room usage summary
-  R-01_...    Readout (slide-structured, becomes the PowerPoint)
-data/       CSV behind the analytics summary (A-01_room-usage.csv)
-docs/       SharePoint profile and the Copilot test plan
-scripts/    Build scripts (Markdown to Word, Excel, PowerPoint, PDF) and the verifier
-build/      Generated output, git-ignored
+library/   The files to upload to the SharePoint library (10 files)
+source/    Word original of the one PDF in library/
+docs/      SharePoint profile, Copilot test plan, metadata values (library-metadata.csv)
 ```
 
-Records are flat on purpose. In SharePoint the file name and the metadata columns carry the
-context that folders carry in git.
+Only `library/` goes into SharePoint. `docs/` holds the answer key for the test, so it stays out of
+the library.
+
+| Record | File in `library/` | Format |
+|---|---|---|
+| PL-01 Research plan | `PL-01_research-plan_room-booking_2026-09.docx` | Word |
+| N-01 Interview notes | `N-01_interview-notes_room-booking_2026-09.docx` | Word |
+| F-01 Booked rooms often sit empty | `F-01_booked-rooms-sit-empty_2026-09.docx` | Word |
+| F-02 Room size and equipment not shown | `F-02_room-details-missing_2026-09.docx` | Word |
+| F-03 Booking and invite are separate steps | `F-03_booking-and-calendar-separate_2026-09.docx` | Word |
+| F-04 Recurring bookings are all-or-nothing | `F-04_recurring-bookings-all-or-nothing_2026-09.pdf` | PDF |
+| F-05 People book defensively (insight) | `F-05_people-book-defensively_2026-09.docx` | Word |
+| A-01 Room usage summary | `A-01_room-usage-summary_2026-09.xlsx` | Excel |
+| R-01 Readout | `R-01_readout_room-booking_2026-10.pptx` | PowerPoint |
+| Content index | `INDEX_content-index.xlsx` | Excel |
+
+F-04 is a PDF on purpose, so Copilot's handling of each format can be compared.
 
 ## Conventions
 
-Markdown here is written differently from `agentic-repo`: every file has a header table in the body
-as well as frontmatter, cross-references use IDs and titles instead of relative links, and every
-record restates its own context. The full rules and the SharePoint metadata columns are in
+Every file has an ID prefix and a descriptive name, opens with a header table, restates its own
+context, and refers to other records by ID and title instead of links. File names follow
+`<ID>_<short-title>_<yyyy-mm>`. ID prefixes: `PL` plan, `N` notes, `F` finding, `A` analytics,
+`R` readout. The full rules and the SharePoint metadata columns are in
 [`docs/sharepoint-profile.md`](docs/sharepoint-profile.md).
 
-File names follow `<ID>_<short-title>_<yyyy-mm>.md`. ID prefixes: `PL` plan, `N` notes,
-`F` finding, `A` analytics, `R` readout.
+## Using it
 
-## Output formats
+1. Create a test SharePoint library.
+2. Add the metadata columns listed in `docs/sharepoint-profile.md`.
+3. Upload the contents of `library/`.
+4. Apply the metadata: open the library in grid view and paste the columns from
+   `docs/library-metadata.csv`. Its first column is the file name.
+5. Run the questions in `docs/copilot-test-plan.md`, again the next day because indexing can lag,
+   and record the results in that file.
 
-Markdown stays the source and Office files are generated from it. Edit the Markdown, not the
-generated files. One finding (F-04) is deliberately delivered as PDF so Copilot's handling of each
-format can be compared. The mapping is the `FORMAT` table in `scripts/common.py`.
+## Editing
 
-| Record | Format |
-|---|---|
-| PL-01, N-01, F-01, F-02, F-03, F-05 | Word (.docx) |
-| F-04 | PDF, exported from Word |
-| A-01 | Excel (.xlsx) |
-| Content index | Excel (.xlsx), `INDEX_content-index.xlsx` |
-| R-01 | PowerPoint (.pptx) |
+Edit the Office files directly. The same facts appear in several files, for example the unused-hours
+figures in A-01, F-01, F-05 and R-01, so the "Keeping the files consistent" table in
+`docs/sharepoint-profile.md` lists where to update.
 
-## Build
+F-04 is the exception. Edit the Word original in `source/`, then export it to PDF into `library/`,
+with "Document structure tags for accessibility" ticked in the Save As PDF options so the PDF keeps
+its structure.
 
-Requirements: Python 3.10 or later, [pandoc](https://pandoc.org/), and LibreOffice (`soffice` on
-the PATH, used for the PDF step).
-
-```
-pip install -r requirements.txt
-python3 scripts/build.py
-```
-
-The script lints the Markdown, clears `build/`, builds every file, then runs `scripts/verify.py`
-(skip it with `--no-verify`). Output:
-
-| Path | Contents |
-|---|---|
-| `build/sharepoint/` | The 10 files to upload to the library |
-| `build/metadata.csv` | One row per file with the values for each SharePoint metadata column; paste into the library's grid view to apply them in bulk |
-| `build/work/` | Intermediate files (the Word file behind the PDF, a LibreOffice profile) |
-
-How each format is made:
-
-- **Word:** pandoc converts the body of each Markdown file (frontmatter removed). A python-docx pass
-  then sets column widths, borders, repeating header rows, landscape orientation for wide tables,
-  and the document properties (title, author, subject).
-- **Excel:** `openpyxl` builds formatted Excel Tables plus a README sheet. Derived columns such as
-  unused percent are written as values, not formulas, so they can be read without recalculation.
-- **PowerPoint:** `python-pptx` builds one slide per `## Slide N:` section in R-01. The slide title
-  is a real title placeholder, tables carry alt text, and the full wording goes in the speaker notes.
-- **PDF:** LibreOffice converts the Word file, requesting a tagged PDF.
-
-`scripts/verify.py` reopens every output and checks headings, tables, list items, slide titles and
-notes, the PDF text layer, that the spreadsheet numbers match the Markdown, and that
-`metadata.csv` lists exactly the delivered files. Passing it does not check how the files look in
-Word or PowerPoint: open them before uploading.
-
-## Testing
-
-Run the questions in [`docs/copilot-test-plan.md`](docs/copilot-test-plan.md) against a test
-SharePoint library with the metadata columns applied, and record the results in that file.
+An earlier variant of this repo, with Markdown sources and a Python script that generated these
+files, is in the git history (commit `3aea093`).
 
 ## License
 
