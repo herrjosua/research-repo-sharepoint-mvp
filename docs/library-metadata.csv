@@ -1,0 +1,11 @@
+File name,ID,Title,Record type,Study,Status,Valence,Prevalence,Author,Date,Last reviewed,Related
+A-01_room-usage-summary_2026-09.xlsx,A-01,"Room Usage Summary, 2026-09-08 to 2026-09-19",analytics,S-01,final,n/a,n/a,Maya Alvarez,2026-09-24,2026-10-05,"F-01, F-05, R-01"
+F-01_booked-rooms-sit-empty_2026-09.docx,F-01,Booked rooms often sit empty,finding,S-01,final,pain-point,5 of 6 participants,Maya Alvarez,2026-09-24,2026-10-05,"F-04, F-05, A-01, N-01, R-01"
+F-02_room-details-missing_2026-09.docx,F-02,Room size and equipment are not shown when booking,finding,S-01,final,pain-point,4 of 6 participants,Maya Alvarez,2026-09-24,2026-10-05,"N-01, R-01"
+F-03_booking-and-calendar-separate_2026-09.docx,F-03,Booking a room and sending the invite are two separate steps,finding,S-01,final,pain-point,4 of 6 participants,Maya Alvarez,2026-09-24,2026-10-05,"N-01, R-01"
+F-04_recurring-bookings-all-or-nothing_2026-09.pdf,F-04,Recurring bookings cannot be released one date at a time,finding,S-01,final,pain-point,3 of 6 participants,Maya Alvarez,2026-09-24,2026-10-05,"F-01, F-05, N-01, R-01"
+F-05_people-book-defensively_2026-09.docx,F-05,Insight - people book rooms they may not need because getting one back is hard,finding,S-01,final,insight,4 of 6 participants,Maya Alvarez,2026-09-24,2026-10-05,"F-01, F-04, A-01, N-01, R-01"
+N-01_interview-notes_room-booking_2026-09.docx,N-01,Meeting Room Booking Study - Interview Notes,notes,S-01,final,n/a,n/a,Maya Alvarez,2026-09-17,2026-10-05,"PL-01, F-01, F-02, F-03, F-04, F-05"
+PL-01_research-plan_room-booking_2026-09.docx,PL-01,Meeting Room Booking Study - Research Plan,plan,S-01,final,n/a,n/a,Maya Alvarez,2026-09-08,2026-10-05,"N-01, A-01, R-01"
+R-01_readout_room-booking_2026-10.pptx,R-01,Meeting Room Booking Study - Readout,readout,S-01,final,n/a,n/a,Maya Alvarez,2026-10-02,2026-10-05,"PL-01, N-01, F-01, F-02, F-03, F-04, F-05, A-01"
+INDEX_content-index.xlsx,INDEX,Content Index,index,S-01,final,n/a,n/a,,,2026-10-05,
